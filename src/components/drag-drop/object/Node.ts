@@ -1,9 +1,11 @@
 import { List, Map } from 'immutable'
+import { Emitter } from './Emitter'
 
-class Node {
+class Node extends Emitter<number>{
   private nodeData: Map<string, any>
 
   constructor(type: string, x: number, y: number, w: number, h: number) {
+    super()
     this.nodeData = Map({
       type,
       x,
