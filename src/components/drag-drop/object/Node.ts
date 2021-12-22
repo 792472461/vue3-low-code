@@ -1,7 +1,7 @@
 import { List, Map } from 'immutable'
 import { Emitter } from './Emitter'
 
-class Node extends Emitter<number>{
+export default class Node extends Emitter<number> {
   private nodeData: Map<string, any>
 
   constructor(type: string, x: number, y: number, w: number, h: number) {
@@ -40,6 +40,10 @@ class Node extends Emitter<number>{
 
   get h() {
     return this.nodeData.get('h')
+  }
+
+  get children(): Node[] {
+    return this.nodeData.get('children').toJS()
   }
 
 }

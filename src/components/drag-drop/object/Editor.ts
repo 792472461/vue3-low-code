@@ -1,10 +1,22 @@
-import { Actions, States } from '../types/editor.types'
+import { Actions, States, Meta } from '../types/editor.types'
 import StateMachine from "./StateMachine";
+import metas from "./Metas";
+import Node from "./Node";
 
 
 export default class Editor extends StateMachine<States, Actions> {
+  private root: Node
+
+  private sel: Set<Node> = new Set()
+  private addingMeta?: Meta
+  private addingVector!: [number, number]
+
   constructor() {
-    super();
+    super(States.Start)
+    this.root = new Node('root', 0, 0, 800, 800)
+    const rectMeta = metas.find(x => x.type === 'rect')
+    this.root.add(new Node('rect', 0, 0, rectMeta!.w, rectMeta!.h))
+
     this.register(States.Start, States.Start, Actions.EvtDragStart, () => {
 
     })
@@ -26,5 +38,10 @@ export default class Editor extends StateMachine<States, Actions> {
     this.register(States.AddingComponent, States.Start, Actions.Auto, () => {
 
     })
+  }
+
+  getRoot() {
+    console.log('getRoot:', this.root)
+    return this.root
   }
 }
