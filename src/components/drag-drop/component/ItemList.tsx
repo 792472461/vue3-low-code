@@ -9,9 +9,9 @@ type EditorProps = {
 }
 
 type Unwrapped<T> = T extends (infer U)[] ? U : T
-export default defineComponent<EditorProps>({
-  setup(props, ctx) {
-    console.log(props)
+export default defineComponent({
+  props: ['editor'],
+  setup(props: { editor: Editor }, ctx) {
     function handleDragStart(e: DragEvent, meta: Unwrapped<typeof metas>) {
       props.editor.dispatch(Actions.StartAddComponent, meta)
     }

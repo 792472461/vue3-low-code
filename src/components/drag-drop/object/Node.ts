@@ -46,4 +46,8 @@ export default class Node extends Emitter<number> {
     return this.nodeData.get('children').toJS()
   }
 
+  public setXYByVector(vec: [ number, number ]) {
+    this.nodeData = this.nodeData.set('x', vec[0] + this.nodeData.get('x'))
+      .set('y', vec[1] + this.nodeData.get('y'))
+  }
 }

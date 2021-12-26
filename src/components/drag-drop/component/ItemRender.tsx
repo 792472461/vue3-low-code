@@ -1,8 +1,9 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, effect, ref } from "vue";
 import Editor from "../object/Editor";
 import Node from '../object/Node'
 import Draggable from "../object/Draggable";
 import { Actions } from "../types/editor.types";
+import { EditorEvents } from '../object/EditorEvents'
 
 type ItemRenderProps = {
   node: Node
@@ -11,9 +12,17 @@ type ItemRenderProps = {
 }
 
 
-const ItemRenderForDraggable = defineComponent<ItemRenderProps>({
-  setup({ node, editor, style, ...others }) {
+const ItemRenderForDraggable = defineComponent({
+  props: ['node', 'editor', 'style'],
+  setup({ node, editor, style, ...others }: ItemRenderProps) {
     const ver = ref(0)
+
+    effect(() => {
+      node.on(EditorEvents.NodePositionUpdated)
+        .subscribe(() => {
+          ver.value++
+        })
+    })
 
     function render(ver: number) {
       switch (node.type) {
@@ -59,6 +68,10 @@ const ItemRenderForDraggable = defineComponent<ItemRenderProps>({
           onDragEnd={(dragNode) => {
             editor.dispatch(Actions.EvtDragEnd, [dragNode.diffX, dragNode.diffY])
           }}
+          style={{
+            width : node.w + 'px',
+            height : node.h + 'px'
+          }}
         >
           {render(ver.value)}
         </Draggable>
@@ -67,20 +80,17 @@ const ItemRenderForDraggable = defineComponent<ItemRenderProps>({
   }
 })
 
-export const ItemRender = defineComponent<ItemRenderProps>({
-  setup({ node, editor }) {
+export const ItemRender = defineComponent({
+  props: ['node', 'editor'],
+  setup({ node, editor }: ItemRenderProps) {
+    console.log(node, 'ItemRender')
     return () => {
       if (!node) return null
       switch (node.type) {
         case 'root':
           const children = node.children
-          return (
-            <div>
-              {
-                children.map((node, i) => (<ItemRender node={node} key={i} editor={editor}/>))
-              }
-            </div>
-          )
+          return children.map((node, i) => (<ItemRender node={node} key={i} editor={editor}/>))
+
         case 'rect':
         case 'image':
         case 'test':

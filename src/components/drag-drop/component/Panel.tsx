@@ -8,20 +8,19 @@ type PanelProps = {
 }
 
 export default (props: PanelProps) => {
-  console.log(props)
   return (
     <div
-      class={classes.panel}
-      onDragover={e => {
+      class={ classes.panel }
+      onDragover={ e => {
         e.preventDefault()
-        props.editor.dispatch(Actions.EvtDrag, [e.clientX, e.clientY])
-      }}
-      onDrop={e => {
+        props.editor.dispatch(Actions.EvtDrag, [ e.clientX, e.clientY ])
+      } }
+      onDrop={ e => {
         e.preventDefault()
         props.editor.dispatch(Actions.EvtDrop)
-      }}
+      } }
     >
-      <ItemRender node={props.editor.getRoot()} editor={props.editor}/>
+      <ItemRender node={ props.editor.getRoot() } editor={ props.editor }/>
     </div>
   )
 
