@@ -1,7 +1,7 @@
 import { defineComponent, effect, ref } from "vue";
 import Editor from "../object/Editor";
 import Node from '../object/Node'
-import Draggable from "../object/Draggable";
+import Draggable from "./Draggable";
 import { Actions } from "../types/editor.types";
 import { EditorEvents } from '../object/EditorEvents'
 
@@ -11,9 +11,8 @@ type ItemRenderProps = {
   style?: any
 }
 
-
 const ItemRenderForDraggable = defineComponent({
-  props: ['node', 'editor', 'style'],
+  props: [ 'node', 'editor', 'style' ],
   setup({ node, editor, style, ...others }: ItemRenderProps) {
     const ver = ref(0)
 
@@ -29,26 +28,26 @@ const ItemRenderForDraggable = defineComponent({
         case "image":
           return (
             <img
-              {...others}
-              src={"https://img.kaikeba.com/a/83541110301202sxpe.png"}
-              style={{
+              { ...others }
+              src={ "https://img.kaikeba.com/a/83541110301202sxpe.png" }
+              style={ {
                 ...style,
-              }}
-            />
+              } }
+              alt=""/>
           )
         case "rect":
           return (
             <div
-              {...others}
-              style={{
+              { ...others }
+              style={ {
                 backgroundColor: "yellow",
                 ...style,
-              }}
+              } }
             />
           )
         case "text":
           return (
-            <h2 {...others} style={{ ...style }}>
+            <h2 { ...others } style={ { ...style } }>
               这里是文本
             </h2>
           )
@@ -58,22 +57,18 @@ const ItemRenderForDraggable = defineComponent({
     return () => {
       return (
         <Draggable
-          initialPosition={[node.x, node.y]}
-          onDragStart={(dragNode) => {
+          initialPosition={ [ node.x, node.y ] }
+          onDragStart={ () => {
             editor.dispatch(Actions.EvtDragStart, node)
-          }}
-          onDrag={() => {
+          } }
+          onDrag={ () => {
             editor.dispatch(Actions.EvtDrag)
-          }}
-          onDragEnd={(dragNode) => {
-            editor.dispatch(Actions.EvtDragEnd, [dragNode.diffX, dragNode.diffY])
-          }}
-          style={{
-            width : node.w + 'px',
-            height : node.h + 'px'
-          }}
+          } }
+          onDragEnd={ (dragNode) => {
+            editor.dispatch(Actions.EvtDragEnd, [ dragNode.diffX, dragNode.diffY ])
+          } }
         >
-          {render(ver.value)}
+          { render(ver.value) }
         </Draggable>
       )
     }
@@ -81,20 +76,36 @@ const ItemRenderForDraggable = defineComponent({
 })
 
 export const ItemRender = defineComponent({
-  props: ['node', 'editor'],
+  props: [ 'node', 'editor' ],
   setup({ node, editor }: ItemRenderProps) {
-    console.log(node, 'ItemRender')
+    const ver = ref(0)
+    effect(() => {
+      node.on(EditorEvents.NodeChildrenUpdated)
+        .subscribe(() => {
+          ver.value++
+        })
+    })
+
     return () => {
       if (!node) return null
       switch (node.type) {
         case 'root':
           const children = node.children
-          return children.map((node, i) => (<ItemRender node={node} key={i} editor={editor}/>))
-
+          return <div key={ ver.value }>
+            {
+              children.map((node, i) => (
+                <ItemRender
+                  style={ { width: node.w + 'px', height: node.h + 'px' } }
+                  node={ node } key={ i }
+                  editor={ editor }
+                />
+              ))
+            }
+          </div>
         case 'rect':
         case 'image':
         case 'test':
-          return <ItemRenderForDraggable editor={editor} node={node}/>
+          return <ItemRenderForDraggable editor={ editor } node={ node }/>
         default:
           throw new Error('unsupported type: ' + node.type)
       }

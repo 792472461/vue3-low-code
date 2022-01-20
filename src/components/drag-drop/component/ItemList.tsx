@@ -9,28 +9,24 @@ type EditorProps = {
 }
 
 type Unwrapped<T> = T extends (infer U)[] ? U : T
-export default defineComponent({
-  props: ['editor'],
-  setup(props: { editor: Editor }, ctx) {
-    function handleDragStart(e: DragEvent, meta: Unwrapped<typeof metas>) {
-      props.editor.dispatch(Actions.StartAddComponent, meta)
-    }
+export default (props : EditorProps) => {
 
-    return () => {
-      return <div class={classes['item-list']}>
-        {metas.map(item => {
-          return (
-            <div
-              draggable={true}
-              onDragstart={(e) => handleDragStart(e, item)}
-              class={classes["item"]}
-              key={item.type}
-            >
-              {item.title}
-            </div>
-          )
-        })}
-      </div>
-    }
+  function handleDragStart(e : DragEvent, meta : Unwrapped<typeof metas>){
+    props.editor.dispatch(Actions.StartAddComponent, meta)
   }
-})
+
+  return <div class={classes['item-list']}>
+    {metas.map(item => {
+      return (
+        <div
+          draggable={true}
+          onDragstart={(e) => handleDragStart(e, item)}
+          class={classes["item"]}
+          key={item.type}
+        >
+          {item.title}
+        </div>
+      )
+    })}
+  </div>
+}

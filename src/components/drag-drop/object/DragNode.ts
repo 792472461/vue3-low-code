@@ -1,4 +1,4 @@
-import { Emitter } from "./Emitter";
+import { Emitter } from './Emitter'
 
 export default class DragNode extends Emitter<number> {
   dragging: boolean = false
@@ -7,20 +7,22 @@ export default class DragNode extends Emitter<number> {
   diffX: number = 0
   diffY: number = 0
 
-  update(e: DragEvent) {
-    const diffX = e.clientX - this.startX
-    const diffY = e.clientY - this.startY
+  update(e : DragEvent) {
+    const diffX =  e.clientX - this.startX
+    const diffY =  e.clientY - this.startY
+
     this.diffX = diffX
     this.diffY = diffY
   }
 
-  init() {
+  init(){
     this.diffX = 0
     this.diffY = 0
   }
 
-  start(e: DragEvent) {
+  start(e : DragEvent) {
     this.startX = e.clientX
     this.startY = e.clientY
   }
+
 }

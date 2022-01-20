@@ -6,7 +6,7 @@ import { EditorEvents } from './EditorEvents'
 
 
 export default class Editor extends StateMachine<States, Actions> {
-  private root: Node
+  readonly root: Node
 
   private sel: Set<Node> = new Set()
   private addingMeta?: Meta
@@ -19,7 +19,7 @@ export default class Editor extends StateMachine<States, Actions> {
     const rectMeta = Metas.find(x => x.type === 'rect')
     this.root.add(new Node('rect', 0, 0, rectMeta!.w, rectMeta!.h))
 
-    this.register(States.Start, States.DragStart, Actions.EvtDragStart, (node: Node) => {
+    this.register(States.Start, States.DragStart, Actions.EvtDragStart, (node : Node) => {
       this.replaceSelection(node)
     })
 
@@ -28,8 +28,9 @@ export default class Editor extends StateMachine<States, Actions> {
 
     this.register(States.Moving, States.Moving, Actions.EvtDrag, () => {
     })
-    this.register(States.Moving, States.Stopped, Actions.EvtDragEnd, (vec: [ number, number ]) => {
-      for (let node of this.sel.values()) {
+    
+    this.register(States.Moving, States.Stopped, Actions.EvtDragEnd, (vec : [number,number]) => {
+      for(let node of this.sel.values()) {
         node.setXYByVector(vec)
         node.emit(EditorEvents.NodePositionUpdated)
       }
@@ -56,6 +57,7 @@ export default class Editor extends StateMachine<States, Actions> {
       )
 
       this.root.add(node)
+      this.root.emit(EditorEvents.NodeChildrenUpdated)
     })
 
     this.register(States.AddingComponent, States.Start, Actions.Auto, () => {
@@ -68,7 +70,6 @@ export default class Editor extends StateMachine<States, Actions> {
   }
 
   getRoot() {
-    console.log('getRoot:', this.root)
     return this.root
   }
 }
